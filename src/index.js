@@ -28,15 +28,9 @@ const basketBtn = new BasketButton(AppState); // Create a new total container.
 // Hydrate state with initial baskets.
 AppState.update(initialState);
 
-// Add the observers. These objects will re-render when state changes.
-AppState.addObserver(productList);
-AppState.addObserver(basketList);
-AppState.addObserver(total);
-AppState.addObserver(basketBtn);
-
 
 // On load, perform initial render..
-productList.render(AppState.getState(), "product-list-container");
-basketList.render(AppState.getState(), "basket-list-container");
-total.render(AppState.getState(), "total-container");
-basketBtn.render(AppState.getState(), "basket-btn-container");
+productList.render();
+basketList.render();
+total.render();
+basketBtn.render();

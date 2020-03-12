@@ -1,10 +1,10 @@
-import Observer from '../lib/Observer';
 import createElement from '../lib/createElement';
 
-class BasketList extends Observer {
-  constructor(state = {}) {
-    super();
-    this.appState = state;
+class BasketList {
+  constructor(observer) {
+    this.$observer = observer;
+    this.$observer.addObserver(this);
+    this.state = this.$observer.getState();
   }
 
   createMarkup(state) {
@@ -45,10 +45,9 @@ class BasketList extends Observer {
     )
   }
 
-  render(state, selector = "app") {
-    const markup = this.createMarkup(state);
-    const parent = document.getElementById(selector);
-  
+  render() {
+    const markup = this.createMarkup(this.state);
+    const parent = document.getElementById('basket-list-container');
   
     parent.innerHTML = '';
     parent.appendChild(markup);
@@ -62,27 +61,25 @@ class BasketList extends Observer {
         e.preventDefault();
         const id = e.target.getAttribute('data-id');
         
-        // Getting the current state.
-        const state = this.appState.getState();
-        const currentBasket = state.baskets.find(basket => basket.id == id);
-        const baskets = state.baskets.filter(basket => basket.id != id);
+        const currentBasket = this.state.baskets.find(basket => basket.id == id);
+        const baskets = this.state.baskets.filter(basket => basket.id != id);
         console.log('baskets', id);
   
         // Updating state will prompt a re-render via the notify method being called.
-        this.appState.update({
-          ...state,
+        this.$observer.update({
+          ...this.state,
           baskets,
           total: {
-            count: state.total.count -= 1,
-            price: state.total.price - currentBasket.price,
+            count: this.state.total.count -= 1,
+            price: this.state.total.price - currentBasket.price,
           }
         });
       })
     }
   }
 
-  update(state) {
-    this.render(state, "basket-list-container");
+  update() {
+    this.render();
   }
 }
 

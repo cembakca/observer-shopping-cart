@@ -1,10 +1,10 @@
-import Observer from '../lib/Observer';
 import createElement from '../lib/createElement';
 
-class Total extends Observer {
-  constructor(state = {}) {
-    super();
-    this.appState = state;
+class Total {
+  constructor(observer) {
+    this.$observer = observer;
+    this.$observer.addObserver(this);
+    this.state = this.$observer.getState();
   }
 
   createMarkup(state) {
@@ -15,16 +15,16 @@ class Total extends Observer {
     );
   }
 
-  render(state, selector = "app") {
-    const markup = this.createMarkup(state);
-    const parent = document.getElementById(selector);
+  render() {
+    const markup = this.createMarkup(this.state);
+    const parent = document.getElementById('total-container');
   
     parent.innerHTML = '';
     parent.appendChild(markup);
   }
 
-  update(state) {
-    this.render(state, "total-container");
+  update() {
+    this.render();
   }
 }
 

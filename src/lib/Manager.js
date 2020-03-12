@@ -8,7 +8,7 @@ class Manager {
   }
 
   removeObserver(fn) {
-    this.observers.filter(item => item !== fn);
+    this.observers = this.observers.filter(item => item !== fn);
   }
 
   triggerObserver(state) {

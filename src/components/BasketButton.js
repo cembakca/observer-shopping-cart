@@ -1,19 +1,13 @@
-import Observer from '../lib/Observer';
 import createElement from '../lib/createElement';
 
-class BasketButton extends Observer {
-  constructor(state = {}) {
-    super();
-    this.appState = state;    
+class BasketButton {
+  constructor(observer) {
+    this.$observer = observer;
+    this.$observer.addObserver(this);
+    this.state = this.$observer.getState();
   }
 
-  // <div id="toggle-baket-container">
-  //   <a href="#" class="basket-link">Sepeti Göster</a>
-  //   <div class="hidden" id="basket-list-container"></div>
-  // </div>
-
   createMarkup(state) {
-    console.log(state.total);
     return createElement(
       'a',
       {href: '#', id: 'basket-link', class: 'basket-link'},
@@ -26,9 +20,9 @@ class BasketButton extends Observer {
     );
   }
 
-  render(state, selector = "app") {
-    const markup = this.createMarkup(state);
-    const parent = document.getElementById(selector);
+  render() {
+    const markup = this.createMarkup(this.state);
+    const parent = document.getElementById('basket-btn-container');
   
     parent.innerHTML = '';
     parent.appendChild(markup);
@@ -45,8 +39,8 @@ class BasketButton extends Observer {
     });
   }
 
-  update(state) {
-    this.render(state, "basket-btn-container");
+  update() {
+    this.render();
   }
 }
 

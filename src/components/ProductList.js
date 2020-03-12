@@ -1,10 +1,10 @@
-import Observer from '../lib/Observer';
 import createElement from '../lib/createElement';
 
-class ProductList extends Observer {
-  constructor(state = {}) {
-    super();
-    this.appState = state;
+class ProductList {
+  constructor(observer) {
+    this.$observer = observer;
+    this.$observer.addObserver(this);
+    this.state = this.$observer.getState();
   }
 
   createMarkup(state) {
@@ -44,9 +44,9 @@ class ProductList extends Observer {
     );
   }
 
-  render(state, selector = "app") {
-    const markup = this.createMarkup(state);
-    const parent = document.getElementById(selector);
+  render() {
+    const markup = this.createMarkup(this.state);
+    const parent = document.getElementById('product-list-container');
   
     parent.innerHTML = '';
     parent.appendChild(markup);
@@ -58,33 +58,30 @@ class ProductList extends Observer {
     for (let button of products) {
       button.addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('girdim')
-        const state = this.appState.getState();
         const id = e.target.getAttribute('data-id');
-        const currentProduct = state.products.find(product => product.id == id);
+        const currentProduct = this.state.products.find(product => product.id == id);
 
-        if (!currentProduct || state.baskets.find(basket => basket.id == id)) {
+        if (!currentProduct || this.state.baskets.find(basket => basket.id == id)) {
           return;
         }
   
         // Getting the current state.
-        const baskets = [...state.baskets, currentProduct];
+        const baskets = [...this.state.baskets, currentProduct];
   
-        // Updating state will prompt a re-render via the notify method being called.
-        this.appState.update({
-          ...state,
+        this.$observer.update({
+          ...this.state,
           baskets,
           total: {
-            count: state.total.count += 1,
-            price: state.total.price + currentProduct.price,
+            count: this.state.total.count += 1,
+            price: this.state.total.price + currentProduct.price,
           }
         });
       })
     }
   }
 
-  update(state) {
-    this.render(state, "product-list-container");
+  update() {
+    this.render();
   }
 }
 
